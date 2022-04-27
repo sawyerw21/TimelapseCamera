@@ -55,8 +55,8 @@ def getCommand(tlName):
     tlLength = tlLength * 1000 # Convert the timelapse length to milliseconds
     tlInterval = tlInterval * 1000 # Convert the timelapse interval to milliseconds
 
-	# Finalize our command using above parameters. Hardcoded parameters include optimal changes to brightness, saturation, resolution, and compression quality.
-    tlCommand = "raspistill -t {0} -br 60 -sa 30 -w 1280 -h 720 -q 75 --timelapse {1} --framestart 1 -o {2}%04d.jpg".format(tlLength, tlInterval, tlName)
+	# Finalize our command using above parameters. Hardcoded parameters include optimal changes to rotation (flipped camera), brightness, saturation, resolution, and compression quality.
+    tlCommand = "raspistill -t {0} -rot 180 -br 60 -sa 30 -w 1280 -h 720 -q 75 --timelapse {1} --framestart 1 -o {2}%04d.jpg".format(tlLength, tlInterval, tlName)
     return tlCommand
 
 
@@ -76,6 +76,8 @@ def main():
     command = getCommand(tlName)  # Get the timelapse command
     os.mkdir(tlName)
     os.chdir(tlName)
+	if motionSensor == False:
+		print("Timelapse will begin when the button is pressed")
     while True:
             if motionSensor:  # If motion is selected, it will wait for motion before starting the timelapse
                 print("Waiting for motion...")
@@ -84,7 +86,6 @@ def main():
                 takeTimeLapse(command, indicator)
                 break
             else:  # If motion is not selected, the timelapse will start when the button is pressed
-                print("Timelapse will begin when the button is pressed")
                 if start.value == 1:  # If the button is pressed, the timelapse is ready to start
                     print("Starting timelapse")
                     takeTimeLapse(command, indicator)
